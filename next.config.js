@@ -6,6 +6,13 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   experimental: {},
+  webpack: (config, { isServer }) => {
+    // Exclude canvas from server bundle (Three.js optional dep)
+    if (isServer) {
+      config.externals = [...(config.externals || []), 'canvas'];
+    }
+    return config;
+  },
 };
 
 module.exports = nextConfig;
