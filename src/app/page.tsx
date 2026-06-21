@@ -19,6 +19,7 @@ import { ServiceSection } from '@/components/sections/ServiceSection';
 import { CTASection } from '@/components/sections/CTASection';
 import { PricingSection } from '@/components/sections/PricingSection';
 import { DoubleMarquee } from '@/components/ui/MarqueeStrip';
+import { ServicesShowcase } from '@/components/sections/ServicesShowcase';
 import { useScrollStore } from '@/store/scrollStore';
 
 // Dynamic import for R3F (no SSR)
@@ -241,7 +242,10 @@ export default function Home() {
         {/* Marquee strip */}
         <DoubleMarquee items={['SEO', 'SMM', 'Design', 'Branding', 'Web Dev', 'SaaS', 'Strategy', 'Growth']} />
 
-        {/* ─── 7: PRICING ─────────────────────────── */}
+        {/* ─── 7: ALL SERVICES SHOWCASE ───────────── */}
+        <ServicesShowcase />
+
+        {/* ─── 8: PRICING ─────────────────────────── */}
         <PricingSection />
 
         {/* ─── 8: CTA ─────────────────────────────── */}
