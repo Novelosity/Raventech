@@ -1,136 +1,90 @@
 'use client';
 
 /**
- * Loader — Particle raven assembles + tagline, then disperses into hero
- * Uses AnimatePresence exit animation
+ * Loader — Plays raven-rotate.mp4 in full, then exits into hero
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollStore } from '@/store/scrollStore';
 
 export function Loader() {
   const setLoaderDone = useScrollStore((s) => s.setLoaderDone);
   const setLoaded = useScrollStore((s) => s.setLoaded);
-  const [phase, setPhase] = useState<'assembling' | 'holding' | 'exiting'>('assembling');
-  const [progress, setProgress] = useState(0);
+  const [exiting, setExiting] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
+  // When video ends → start exit
+  const handleEnded = () => {
+    setLoaded(true);
+    setExiting(true);
+    // Give exit animation time to finish before unmounting & enabling scroll
+    setTimeout(() => setLoaderDone(true), 900);
+  };
+
+  // Fallback: if video fails to load/play after 8s, exit anyway
   useEffect(() => {
-    // Simulate loading progress
-    const interval = setInterval(() => {
-      setProgress((p) => {
-        if (p >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return p + Math.random() * 15;
-      });
-    }, 100);
-
-    // Phase timeline
-    const t1 = setTimeout(() => setPhase('holding'), 2200);
-    const t2 = setTimeout(() => {
-      setPhase('exiting');
-      setLoaded(true);
-    }, 3500);
-    const t3 = setTimeout(() => setLoaderDone(true), 4500);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
-  }, [setLoaderDone, setLoaded]);
-
-  const isExiting = phase === 'exiting';
+    const fallback = setTimeout(() => {
+      if (!exiting) handleEnded();
+    }, 8000);
+    return () => clearTimeout(fallback);
+  }, [exiting]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <AnimatePresence>
-      {!isExiting ? (
+      {!exiting && (
         <motion.div
           key="loader"
           className="fixed inset-0 z-[9997] flex flex-col items-center justify-center bg-void overflow-hidden"
           exit={{
             opacity: 0,
-            scale: 1.05,
-            transition: { duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] },
+            scale: 1.06,
+            transition: { duration: 0.85, ease: [0.43, 0.13, 0.23, 0.96] },
           }}
         >
-          {/* Background gradient */}
+          {/* Background */}
           <div className="absolute inset-0 bg-gradient-radial from-navy/30 via-void to-void" />
 
-          {/* Rotating raven video */}
+          {/* Raven rotation video — plays once, full size */}
           <motion.div
-            className="relative w-64 h-64 md:w-80 md:h-80 mb-8"
-            initial={{ opacity: 0, scale: 0.75 }}
-            animate={{
-              opacity: 1,
-              scale: phase === 'assembling' ? [0.75, 1.04, 1] : 1,
-            }}
-            transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+            className="relative w-72 h-72 md:w-96 md:h-96"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Radial violet glow behind video */}
+            {/* Violet glow */}
             <div
               className="absolute inset-0 rounded-full pointer-events-none"
               style={{
-                background: 'radial-gradient(circle, rgba(124,58,237,0.35) 0%, transparent 70%)',
-                filter: 'blur(24px)',
-                transform: 'scale(1.3)',
+                background: 'radial-gradient(circle, rgba(124,58,237,0.4) 0%, transparent 70%)',
+                filter: 'blur(32px)',
+                transform: 'scale(1.4)',
               }}
             />
             <video
+              ref={videoRef}
               src="/videos/raven-rotate.mp4"
               autoPlay
-              loop
               muted
               playsInline
+              onEnded={handleEnded}
               className="w-full h-full object-contain relative z-10"
-              style={{ filter: 'drop-shadow(0 0 32px rgba(124,58,237,0.6))' }}
+              style={{ filter: 'drop-shadow(0 0 40px rgba(124,58,237,0.65))' }}
             />
           </motion.div>
 
-          {/* Tagline */}
+          {/* Tagline — fades in after 0.5s */}
           <motion.div
-            className="text-center space-y-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: phase !== 'assembling' ? 0 : 0, y: 0 }}
+            className="text-center mt-6 space-y-1"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }}
           >
-            <motion.p
-              className="text-fluid-lg font-display font-light tracking-[0.3em] text-white/40 uppercase"
-              initial={{ opacity: 0, letterSpacing: '0.5em' }}
-              animate={{ opacity: 1, letterSpacing: '0.3em' }}
-              transition={{ duration: 1.5, delay: 1, ease: 'easeOut' }}
-            >
+            <p className="text-[11px] font-display font-light tracking-[0.35em] text-white/35 uppercase">
               We don&apos;t follow trends.
-            </motion.p>
-            <motion.p
-              className="text-fluid-xl font-display font-semibold tracking-[0.2em] text-white uppercase"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1.5, ease: [0.22, 1, 0.36, 1] }}
-            >
-              We{' '}
-              <span className="text-gradient-violet-cyan">build</span>{' '}
-              them.
-            </motion.p>
-          </motion.div>
-
-          {/* Loading bar */}
-          <motion.div
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 w-48"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <div className="h-px bg-white/10 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-violet to-cyan rounded-full"
-                style={{ width: `${Math.min(progress, 100)}%` }}
-              />
-            </div>
-            <p className="text-center text-[10px] font-display tracking-widest text-white/30 mt-2 uppercase">
-              {Math.min(Math.round(progress), 100)}%
+            </p>
+            <p className="text-base font-display font-semibold tracking-[0.2em] text-white uppercase">
+              We <span className="text-gradient-violet-cyan">build</span> them.
             </p>
           </motion.div>
 
@@ -142,8 +96,7 @@ export function Loader() {
             Digital Marketing
           </div>
         </motion.div>
-      ) : null}
+      )}
     </AnimatePresence>
   );
 }
-
