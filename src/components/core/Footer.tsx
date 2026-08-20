@@ -4,16 +4,23 @@
  * Footer — Sticky footer with services, contact, and social links
  */
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MagneticButton } from '@/components/ui/MagneticButton';
 
 const SERVICES = [
-  'SEO Optimization',
-  'Social Media Marketing',
-  'Graphic Design',
-  'Logo & Branding',
-  'Web Design & Development',
-  'SaaS Applications',
+  { label: 'SEO Optimization',         href: '/services/seo' },
+  { label: 'Social Media Marketing',   href: '/services/social-media-marketing' },
+  { label: 'Logo & Branding',          href: '/services/branding' },
+  { label: 'Logo Creation',            href: '/services/logo-creation' },
+  { label: 'Web Development',          href: '/services/website-development' },
+  { label: 'Website Designing',        href: '/services/website-designing' },
+  { label: 'Meta Ads',                 href: '/services/meta-ads' },
+  { label: 'Google Ads',               href: '/services/google-ads' },
+  { label: 'TikTok Ads',               href: '/services/tiktok-ads' },
+  { label: 'E-Commerce Setup',         href: '/services/ecommerce-store-setup' },
+  { label: 'Product Listing',          href: '/services/product-listing' },
+  { label: 'A+ Content',               href: '/services/a-plus-content' },
 ];
 
 const SOCIAL_LINKS = [
@@ -93,20 +100,20 @@ export function Footer() {
             <ul className="space-y-3">
               {SERVICES.map((s, i) => (
                 <motion.li
-                  key={s}
+                  key={s.label}
                   initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ delay: i * 0.04 }}
                   viewport={{ once: true }}
                 >
-                  <a
-                    href="#"
+                  <Link
+                    href={s.href}
                     className="text-white/60 hover:text-white font-body text-sm transition-colors duration-200 flex items-center gap-2 group"
                     data-cursor-scale="1.5"
                   >
                     <span className="w-4 h-px bg-violet/50 group-hover:w-6 group-hover:bg-violet transition-all duration-300" />
-                    {s}
-                  </a>
+                    {s.label}
+                  </Link>
                 </motion.li>
               ))}
             </ul>

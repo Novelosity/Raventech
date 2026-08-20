@@ -5,18 +5,19 @@
  */
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import Link from 'next/link';
+import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { MagneticButton } from '@/components/ui/MagneticButton';
 import { useScrollStore, SCENE_RANGES } from '@/store/scrollStore';
 
 const NAV_ITEMS = [
-  { label: 'SEO', scene: 1 },
-  { label: 'Social', scene: 2 },
-  { label: 'Design', scene: 3 },
-  { label: 'Branding', scene: 4 },
-  { label: 'Web Dev', scene: 5 },
-  { label: 'SaaS', scene: 6 },
-  { label: 'Contact', scene: 7 },
+  { label: 'SEO',      href: '/services/seo',                    anchor: '#seo',          scene: 1 },
+  { label: 'Social',   href: '/services/social-media-marketing', anchor: '#smm',          scene: 2 },
+  { label: 'Branding', href: '/services/branding',               anchor: '#branding',     scene: 3 },
+  { label: 'Web Dev',  href: '/services/website-development',    anchor: '#webdev',       scene: 4 },
+  { label: 'SaaS',     href: '/services/ecommerce-store-setup',  anchor: '#saas',         scene: 5 },
+  { label: 'Design',   href: '/services/logo-creation',          anchor: '#design',       scene: 6 },
+  { label: 'Contact',  href: '/#contact-form',                   anchor: '#contact-form', scene: 7 },
 ];
 
 export function Navigation() {
@@ -85,21 +86,20 @@ export function Navigation() {
               </motion.div>
             </MagneticButton>
 
-            {/* Desktop nav dots + labels */}
+            {/* Desktop nav links */}
             <div className="hidden md:flex items-center gap-1">
               {NAV_ITEMS.map((item) => {
                 const [start, end] = SCENE_RANGES[item.scene] ?? [0, 1];
                 const isActive = progress >= start && progress < end;
                 return (
-                  <button
-                    key={item.scene}
-                    onClick={() => scrollToScene(item.scene)}
+                  <Link
+                    key={item.label}
+                    href={item.href}
                     className={`relative px-3 py-1.5 text-xs font-display font-medium tracking-wider uppercase transition-all duration-300 group ${
                       isActive ? 'text-cyan' : 'text-white/40 hover:text-white/80'
                     }`}
                     data-cursor-scale="1.5"
                   >
-                    {/* Active underline */}
                     <motion.span
                       className="absolute bottom-0 left-0 right-0 h-px bg-cyan origin-left"
                       initial={{ scaleX: 0 }}
@@ -107,7 +107,7 @@ export function Navigation() {
                       transition={{ duration: 0.3 }}
                     />
                     {item.label}
-                  </button>
+                  </Link>
                 );
               })}
             </div>
@@ -117,7 +117,7 @@ export function Navigation() {
               <MagneticButton
                 variant="outline"
                 className="text-xs py-2 px-5"
-                onClick={() => scrollToScene(7)}
+                href="/#contact-form"
                 cursorLabel="CONTACT"
               >
                 Let&apos;s Talk
@@ -156,13 +156,14 @@ export function Navigation() {
               >
                 <div className="flex flex-col py-4 px-6 gap-2">
                   {NAV_ITEMS.map((item) => (
-                    <button
-                      key={item.scene}
-                      onClick={() => scrollToScene(item.scene)}
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setMenuOpen(false)}
                       className="text-left py-3 px-4 text-white/70 hover:text-white font-display font-medium tracking-wider uppercase text-sm border-b border-white/5 transition-colors"
                     >
                       {item.label}
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </motion.div>

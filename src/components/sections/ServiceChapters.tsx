@@ -6,6 +6,7 @@
  * Product cards animate in with whileInView stagger.
  */
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -23,6 +24,7 @@ interface Chapter {
   accentLine: number;  // index of line that gets gradient treatment
   accent: 'violet' | 'cyan' | 'gold';
   service: string;
+  serviceHref: string; // links to the service detail page
   subtext: string;
   products: Product[];
 }
@@ -37,6 +39,7 @@ const CHAPTERS: Chapter[] = [
     accentLine: 0,
     accent: 'cyan',
     service: 'SEO Optimization',
+    serviceHref: '/services/seo',
     subtext:
       'Search dominance engineered through technical precision, content architecture, and relentless authority building.',
     products: [
@@ -93,6 +96,7 @@ const CHAPTERS: Chapter[] = [
     accentLine: 0,
     accent: 'violet',
     service: 'Social Media Marketing',
+    serviceHref: '/services/social-media-marketing',
     subtext:
       'Social presences that compound — not just grow. Data-driven content, community architecture, and paid amplification that turns followers into fanatics.',
     products: [
@@ -149,6 +153,7 @@ const CHAPTERS: Chapter[] = [
     accentLine: 2,
     accent: 'violet',
     service: 'Logo & Branding',
+    serviceHref: '/services/branding',
     subtext:
       'Brand identities built to mean something — not just look good. Strategy-first thinking, then relentless aesthetics.',
     products: [
@@ -205,6 +210,7 @@ const CHAPTERS: Chapter[] = [
     accentLine: 0,
     accent: 'cyan',
     service: 'Web Design & Development',
+    serviceHref: '/services/website-development',
     subtext:
       'Digital experiences engineered for Core Web Vitals perfection, conversion rate lift, and lasting brand authority.',
     products: [
@@ -261,6 +267,7 @@ const CHAPTERS: Chapter[] = [
     accentLine: 2,
     accent: 'violet',
     service: 'SaaS Applications',
+    serviceHref: '/services/ecommerce-store-setup',
     subtext:
       'Full-stack products from MVP to enterprise — designed, built, and launched with the obsession of a founder.',
     products: [
@@ -317,6 +324,7 @@ const CHAPTERS: Chapter[] = [
     accentLine: 1,
     accent: 'gold',
     service: 'Graphic Design',
+    serviceHref: '/services/logo-creation',
     subtext:
       'Visual communication that commands attention. Every pixel intentional, every asset engineered to convert.',
     products: [
@@ -495,27 +503,42 @@ function ChapterHeading({ chapter }: { chapter: Chapter }) {
         {chapter.subtext}
       </motion.p>
 
-      {/* Scroll nudge */}
+      {/* Scroll nudge + CTA link */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ delay: 0.8 }}
-        className="flex items-center gap-3"
+        className="flex items-center gap-5"
       >
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.7, repeat: Infinity, ease: 'easeInOut' }}
-          className={a.text}
+        <div className="flex items-center gap-3">
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 1.7, repeat: Infinity, ease: 'easeInOut' }}
+            className={a.text}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}
+              strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+              <path d="M19 9l-7 7-7-7" />
+            </svg>
+          </motion.div>
+          <span className="text-[10px] font-display tracking-[0.38em] uppercase text-white/25">
+            {chapter.products.length} services
+          </span>
+        </div>
+
+        <Link
+          href={chapter.serviceHref}
+          className={`flex items-center gap-2 text-xs font-display font-semibold tracking-widest uppercase
+                      ${a.text} opacity-70 hover:opacity-100 transition-opacity duration-200 group`}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}
-            strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-            <path d="M19 9l-7 7-7-7" />
+          View full page
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+            strokeLinecap="round" strokeLinejoin="round"
+            className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200">
+            <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg>
-        </motion.div>
-        <span className="text-[10px] font-display tracking-[0.38em] uppercase text-white/25">
-          {chapter.products.length} services
-        </span>
+        </Link>
       </motion.div>
     </section>
   );
@@ -537,15 +560,18 @@ function ProductGrid({ chapter }: { chapter: Chapter }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-7xl">
         {chapter.products.map((product, i) => (
-          <motion.article
+          <motion.div
             key={product.name}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.12 }}
             transition={{ delay: i * 0.08, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             whileHover={{ y: -6, transition: { duration: 0.2 } }}
-            className={`group relative p-6 rounded-2xl border bg-white/[0.025]
-                        backdrop-blur-sm transition-all duration-300 cursor-default
+          >
+          <Link
+            href={chapter.serviceHref}
+            className={`group relative flex flex-col h-full p-6 rounded-2xl border bg-white/[0.025]
+                        backdrop-blur-sm transition-all duration-300
                         ${a.border} ${a.glow}`}
           >
             {/* Top accent rule */}
@@ -583,7 +609,7 @@ function ProductGrid({ chapter }: { chapter: Chapter }) {
             </p>
 
             {/* Pill tags */}
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1.5 mb-4">
               {product.tags.map((tag) => (
                 <span
                   key={tag}
@@ -594,7 +620,19 @@ function ProductGrid({ chapter }: { chapter: Chapter }) {
                 </span>
               ))}
             </div>
-          </motion.article>
+
+            {/* Explore arrow */}
+            <div className={`flex items-center gap-1.5 text-[11px] font-display font-semibold tracking-widest uppercase
+                            ${a.text} opacity-0 group-hover:opacity-100 transition-opacity duration-200 mt-auto`}>
+              Explore
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+                strokeLinecap="round" strokeLinejoin="round"
+                className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-200">
+                <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </div>
+          </Link>
+          </motion.div>
         ))}
       </div>
     </section>
