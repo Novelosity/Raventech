@@ -19,6 +19,7 @@ import { CTASection }      from '@/components/sections/CTASection';
 import { PricingSection }  from '@/components/sections/PricingSection';
 import { DoubleMarquee }   from '@/components/ui/MarqueeStrip';
 import { ServicesShowcase } from '@/components/sections/ServicesShowcase';
+import { ContactSection }  from '@/components/sections/ContactSection';
 import { WhyUsSection }    from '@/components/sections/WhyUsSection';
 import { useScrollStore }  from '@/store/scrollStore';
 
@@ -210,6 +211,9 @@ export default function Home() {
 
         {/* ALL SERVICES SHOWCASE */}
         <ServicesShowcase />
+
+        {/* CONTACT */}
+        <ContactSection />
 
         {/* PRICING */}
         <PricingSection />
