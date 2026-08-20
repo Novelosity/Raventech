@@ -6,7 +6,7 @@
  * Master scroll progress synced to global store
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useScroll, useMotionValueEvent, useTransform, motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
@@ -83,7 +83,7 @@ function HeroVideoFixed() {
         muted
         playsInline
         loop
-        preload="auto"
+        preload="metadata"
         className="absolute inset-0 w-full h-full object-cover will-change-transform"
         style={{ scale: videoScale, y: videoY }}
       />
@@ -148,6 +148,12 @@ export default function Home() {
   const setScrollY  = useScrollStore((s) => s.setScrollY);
   const setMouse    = useScrollStore((s) => s.setMouse);
 
+  // Only mount Three.js on desktop — saves WebGL context + ~40MB on mobile
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 768);
+  }, []);
+
   const { scrollYProgress, scrollY } = useScroll();
 
   useMotionValueEvent(scrollYProgress, 'change', (v) => setProgress(v));
@@ -178,8 +184,8 @@ export default function Home() {
       {/* Custom cursor */}
       <Cursor />
 
-      {/* Three.js canvas */}
-      <Scene />
+      {/* Three.js canvas — desktop only */}
+      {isDesktop && <Scene />}
 
       {/* Nav */}
       <Navigation />

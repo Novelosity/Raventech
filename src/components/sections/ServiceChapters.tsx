@@ -422,15 +422,15 @@ function ChapterHeading({ chapter }: { chapter: Chapter }) {
     <section
       id={chapter.id}
       className="relative min-h-screen flex flex-col justify-center overflow-hidden
-                 px-6 md:px-14 lg:px-24 py-28"
+                 px-5 sm:px-8 md:px-14 lg:px-24 py-24 md:py-28"
     >
       {/* Ghost watermark number */}
       <div
         aria-hidden="true"
         className="absolute right-0 top-1/2 -translate-y-1/2 font-headline font-extrabold
-                   select-none pointer-events-none leading-none"
+                   select-none pointer-events-none leading-none hidden sm:block"
         style={{
-          fontSize: 'clamp(10rem, 28vw, 22rem)',
+          fontSize: 'clamp(8rem, 22vw, 22rem)',
           color: a.watermark,
         }}
       >
@@ -463,8 +463,8 @@ function ChapterHeading({ chapter }: { chapter: Chapter }) {
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
         variants={containerVariants}
-        className="font-headline font-extrabold leading-[0.86] mb-12"
-        style={{ fontSize: 'clamp(3.2rem, 8.5vw, 8rem)' }}
+        className="font-headline font-extrabold leading-[0.88] mb-10 md:mb-12"
+        style={{ fontSize: 'clamp(2.4rem, 7vw, 8rem)' }}
       >
         {chapter.lines.map((line, i) => (
           <div key={i} className="overflow-hidden">
@@ -526,7 +526,7 @@ function ProductGrid({ chapter }: { chapter: Chapter }) {
   const a = A[chapter.accent];
 
   return (
-    <section className="relative pb-28 md:pb-36 px-6 md:px-14 lg:px-24">
+    <section className="relative pb-20 md:pb-32 px-5 sm:px-8 md:px-14 lg:px-24">
       {/* Accent divider */}
       <div
         className="w-full h-px mb-16"

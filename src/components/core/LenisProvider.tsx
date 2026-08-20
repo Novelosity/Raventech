@@ -17,14 +17,15 @@ export function LenisProvider({ children }: LenisProviderProps) {
   const rafRef = useRef<number>(0);
 
   useEffect(() => {
+    const isMobile = window.innerWidth < 768;
     const lenis = new Lenis({
-      duration: 2.0,
+      duration: isMobile ? 1.0 : 2.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 0.32,
-      touchMultiplier: 1.1,
+      smoothWheel: !isMobile,
+      wheelMultiplier: isMobile ? 1.0 : 0.32,
+      touchMultiplier: isMobile ? 1.5 : 1.1,
       infinite: false,
     });
 

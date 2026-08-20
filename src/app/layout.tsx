@@ -1,19 +1,21 @@
 import type { Metadata, Viewport } from 'next';
-import { Space_Grotesk, Sora, Inter } from 'next/font/google';
+import { Orbitron, Exo_2, Inter } from 'next/font/google';
 import './globals.css';
 
-const spaceGrotesk = Space_Grotesk({
+// Loaded via next/font — zero render-blocking, self-hosted by Vercel CDN
+const orbitron = Orbitron({
   subsets: ['latin'],
-  variable: '--font-space-grotesk',
+  variable: '--font-orbitron',
   display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700', '800', '900'],
 });
 
-const sora = Sora({
+const exo2 = Exo_2({
   subsets: ['latin'],
-  variable: '--font-sora',
+  variable: '--font-exo2',
   display: 'swap',
-  weight: ['300', '400', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  style: ['normal', 'italic'],
 });
 
 const inter = Inter({
@@ -26,7 +28,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'RAVENTECH — Digital Marketing, Engineered.',
   description:
-    'We don\'t follow trends. We build them. RAVENTECH is a premium digital marketing agency specializing in SEO, Social Media, Branding, Web Development, and SaaS applications.',
+    "We don't follow trends. We build them. RAVENTECH is a premium digital marketing agency specializing in SEO, Social Media, Branding, Web Development, and SaaS applications.",
   keywords: [
     'digital marketing agency',
     'SEO',
@@ -61,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${sora.variable} ${inter.variable}`}
+      className={`${orbitron.variable} ${exo2.variable} ${inter.variable}`}
       suppressHydrationWarning
     >
       <body className="antialiased">

@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&display=swap');
-
+/* Fonts loaded via next/font in layout.tsx — no @import needed */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -247,14 +246,30 @@ html.lenis {
 
   h1, h2 {
     word-break: break-word;
+    overflow-wrap: break-word;
   }
 }
 
 /* Prevent layout shift from fixed elements on mobile */
 @media (max-width: 768px) {
+  /* Skip heavy 3D canvas — saves WebGL context + GPU memory */
   .canvas-container {
-    display: none; /* hide heavy 3D canvas on small screens to prevent lag */
+    display: none;
   }
+
+  /* Reduce grain/vignette cost on low-end devices */
+  .grain {
+    display: none;
+  }
+}
+
+/* Prevent horizontal overflow on all screen sizes */
+html {
+  overflow-x: hidden;
+}
+main, section, footer, header {
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* ── Prefers-reduced-motion ───────────────────────────── */
