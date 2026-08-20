@@ -7,248 +7,208 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { useScroll, useMotionValueEvent } from 'framer-motion';
+import { useScroll, useMotionValueEvent, useTransform, motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
-import { Loader } from '@/components/core/Loader';
-import { Navigation } from '@/components/core/Navigation';
-import { Footer } from '@/components/core/Footer';
-import { Cursor } from '@/components/core/Cursor';
-import { HeroSection } from '@/components/sections/HeroSection';
-import { ServiceSection } from '@/components/sections/ServiceSection';
-import { CTASection } from '@/components/sections/CTASection';
-import { PricingSection } from '@/components/sections/PricingSection';
-import { DoubleMarquee } from '@/components/ui/MarqueeStrip';
+import { Navigation }      from '@/components/core/Navigation';
+import { Footer }          from '@/components/core/Footer';
+import { Cursor }          from '@/components/core/Cursor';
+import { HeroSection }     from '@/components/sections/HeroSection';
+import { ServiceChapters } from '@/components/sections/ServiceChapters';
+import { CTASection }      from '@/components/sections/CTASection';
+import { PricingSection }  from '@/components/sections/PricingSection';
+import { DoubleMarquee }   from '@/components/ui/MarqueeStrip';
 import { ServicesShowcase } from '@/components/sections/ServicesShowcase';
-import { useScrollStore } from '@/store/scrollStore';
+import { WhyUsSection }    from '@/components/sections/WhyUsSection';
+import { useScrollStore }  from '@/store/scrollStore';
 
-// Dynamic import for R3F (no SSR)
-const Scene = dynamic(() => import('@/components/three/Scene').then((m) => ({ default: m.Scene })), {
-  ssr: false,
-});
+const Scene = dynamic(
+  () => import('@/components/three/Scene').then((m) => ({ default: m.Scene })),
+  { ssr: false }
+);
+const LenisProvider = dynamic(
+  () => import('@/components/core/LenisProvider').then((m) => ({ default: m.LenisProvider })),
+  { ssr: false }
+);
 
-// Dynamic import for Lenis
-const LenisProvider = dynamic(() => import('@/components/core/LenisProvider').then((m) => ({ default: m.LenisProvider })), {
-  ssr: false,
-});
+// ─────────────────────────────────────────────────────────────────────────────
+// FIXED HERO VIDEO — autoplays at 0.35× speed, true multi-layer parallax
+// ─────────────────────────────────────────────────────────────────────────────
+function HeroVideoFixed() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { scrollYProgress } = useScroll();
 
+  // Start slow cinematic playback the moment the video is ready
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    const start = () => {
+      vid.playbackRate = 0.35;   // very slow — cinematic
+      vid.play().catch(() => {}); // autoplay (muted, so allowed by browsers)
+    };
+    if (vid.readyState >= 1) start();
+    else vid.addEventListener('loadedmetadata', start, { once: true });
+  }, []);
+
+  // ── Parallax depth layers ─────────────────────────────────────────────────
+  // Each layer moves at a different rate, creating real depth perception.
+
+  // Layer 0 (deepest — video itself): slow drift DOWN + subtle zoom
+  const videoY     = useTransform(scrollYProgress, [0, 0.45], ['0%',  '9%']);
+  const videoScale = useTransform(scrollYProgress, [0, 0.45], [1.0,   1.15]);
+
+  // Layer 1 (mid — colour fog): drifts UP slightly faster than video
+  const fog1Y      = useTransform(scrollYProgress, [0, 0.45], ['0%', '-7%']);
+  const fog1Opacity= useTransform(scrollYProgress, [0, 0.20, 0.40], [0.55, 0.75, 0.95]);
+
+  // Layer 2 (near — radial vignette): drifts UP faster still
+  const fog2Y      = useTransform(scrollYProgress, [0, 0.45], ['0%', '-16%']);
+
+  // Whole-unit fade — video disappears as first service section takes over
+  const unitOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.26, 0.36, 0.46],
+    [1,  1,   0.22,  0]
+  );
+
+  return (
+    <motion.div
+      className="fixed inset-0 pointer-events-none overflow-hidden"
+      style={{ opacity: unitOpacity, zIndex: 1 }}
+    >
+      {/* ── LAYER 0: VIDEO (deepest, slowest) ── */}
+      <motion.video
+        ref={videoRef}
+        src="/videos/crow-hero-reveal.mp4"
+        muted
+        playsInline
+        loop
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover will-change-transform"
+        style={{ scale: videoScale, y: videoY }}
+      />
+
+      {/* ── LAYER 1: Base tone gradient (static, no movement) ── */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(to bottom, rgba(10,10,15,0.48) 0%, rgba(10,10,15,0.06) 42%, rgba(10,10,15,0.85) 100%)',
+        }}
+      />
+
+      {/* ── LAYER 2: Colour fog — mid depth, drifts up ── */}
+      <motion.div
+        className="absolute inset-0"
+        style={{ y: fog1Y, opacity: fog1Opacity }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse 130% 80% at 50% 58%, transparent 25%, rgba(10,10,15,0.92) 100%)',
+          }}
+        />
+        {/* Ambient violet tint — matches crow video colour temp */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(135deg, rgba(124,58,237,0.08) 0%, transparent 50%, rgba(34,211,238,0.05) 100%)',
+          }}
+        />
+      </motion.div>
+
+      {/* ── LAYER 3: Vignette ring — nearest, drifts fastest ── */}
+      <motion.div
+        className="absolute inset-0"
+        style={{ y: fog2Y }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse 70% 55% at 50% 48%, transparent 40%, rgba(10,10,15,0.82) 100%)',
+          }}
+        />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 const SERVICES = [
-  'SEO Optimization',
-  'Social Media Marketing',
-  'Graphic Design',
-  'Logo & Branding',
-  'Web Development',
-  'SaaS Applications',
-  'Brand Strategy',
-  'Content Marketing',
+  'SEO Optimization', 'Social Media Marketing', 'Graphic Design',
+  'Logo & Branding', 'Web Development', 'SaaS Applications',
+  'Brand Strategy', 'Content Marketing',
 ];
 
 export default function Home() {
   const setProgress = useScrollStore((s) => s.setProgress);
-  const setScrollY = useScrollStore((s) => s.setScrollY);
-  const loaderDone = useScrollStore((s) => s.loaderDone);
+  const setScrollY  = useScrollStore((s) => s.setScrollY);
+  const setMouse    = useScrollStore((s) => s.setMouse);
 
   const { scrollYProgress, scrollY } = useScroll();
 
-  // Sync Framer scroll progress to global store
-  useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    setProgress(v);
-  });
+  useMotionValueEvent(scrollYProgress, 'change', (v) => setProgress(v));
+  useMotionValueEvent(scrollY,         'change', (v) => setScrollY(v));
 
-  useMotionValueEvent(scrollY, 'change', (v) => {
-    setScrollY(v);
-  });
+  // Global mouse tracking → drives 3D parallax in hero + Three.js camera
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      setMouse(
+        (e.clientX / window.innerWidth)  * 2 - 1,
+        -((e.clientY / window.innerHeight) * 2 - 1)
+      );
+    };
+    window.addEventListener('mousemove', onMove, { passive: true });
+    return () => window.removeEventListener('mousemove', onMove);
+  }, [setMouse]);
 
   return (
     <LenisProvider>
-      {/* Grain film overlay */}
-      <div className="grain" aria-hidden="true" />
+      {/* ── FIXED LAYERS (behind everything) ── */}
+      <HeroVideoFixed />
 
+      {/* Film grain */}
+      <div className="grain" aria-hidden="true" />
       {/* Vignette */}
       <div className="vignette" aria-hidden="true" />
 
-      {/* Custom cursor (desktop only) */}
+      {/* Custom cursor */}
       <Cursor />
 
-      {/* Loader (AnimatePresence exit) */}
-      <Loader />
-
-      {/* Fixed R3F Canvas */}
+      {/* Three.js canvas */}
       <Scene />
 
-      {/* Sticky navigation */}
+      {/* Nav */}
       <Navigation />
 
-      {/* DOM content */}
+      {/* ── DOM CONTENT ── */}
       <main className="dom-content">
-        {/* ─── 0: HERO ────────────────────────────── */}
+
+        {/* 0: HERO */}
         <HeroSection />
 
-        {/* Marquee strip */}
         <DoubleMarquee items={SERVICES} />
 
-        {/* ─── 1: SEO ─────────────────────────────── */}
-        <ServiceSection
-          id="seo"
-          sceneNo="01"
-          title="SEO Optimization"
-          tagline="Rank where it matters."
-          description="We engineer search dominance through technical SEO, content architecture, and authority building. Your competitors won't see you coming — but your customers will."
-          features={[
-            'Technical SEO audits & fixes',
-            'Keyword strategy & content mapping',
-            'Link authority building',
-            'Core Web Vitals optimization',
-            'Local & national ranking campaigns',
-          ]}
-          stats={[
-            { val: '#1', label: 'Avg. Ranking Position', color: 'cyan' },
-            { val: '340%', label: 'Traffic Increase', color: 'violet' },
-            { val: '6mo', label: 'Time to Page 1', color: 'gold' },
-            { val: '12×', label: 'ROI on SEO Spend', color: 'cyan' },
-          ]}
-          image="/images/seo.png"
-          accent="text-cyan"
-          align="left"
-        />
+        {/* SERVICE CHAPTERS — scroll-animated headings + product grids */}
+        <ServiceChapters />
 
-        {/* ─── 2: SMM ─────────────────────────────── */}
-        <ServiceSection
-          id="smm"
-          sceneNo="02"
-          title="Social Media Marketing"
-          tagline="Conversations that convert."
-          description="We build social presences that don't just grow — they compound. Data-driven content, community architecture, and paid amplification that turns followers into fanatics."
-          features={[
-            'Platform strategy & account setup',
-            'Content creation & scheduling',
-            'Community management',
-            'Paid social campaigns (Meta, TikTok, LinkedIn)',
-            'Influencer partnerships',
-          ]}
-          stats={[
-            { val: '5M+', label: 'Organic Impressions/mo', color: 'violet' },
-            { val: '8.4%', label: 'Avg. Engagement Rate', color: 'cyan' },
-            { val: '280%', label: 'Follower Growth', color: 'gold' },
-            { val: '4.2×', label: 'ROAS on Paid Social', color: 'violet' },
-          ]}
-          accent="text-violet"
-          align="right"
-        />
+        <DoubleMarquee items={['SEO','Branding','Web Dev','SaaS','Design','Strategy','Growth','Results']} />
 
-        {/* Marquee strip */}
-        <DoubleMarquee items={['Strategy', 'Design', 'Growth', 'Innovation', 'Results', 'Performance', 'Brand', 'Scale']} />
+        {/* WHY US */}
+        <WhyUsSection />
 
-        {/* ─── 3: GRAPHIC DESIGN ──────────────────── */}
-        <ServiceSection
-          id="design"
-          sceneNo="03"
-          title="Graphic Design"
-          tagline="Design that stops the scroll."
-          description="Visual communication that commands attention and drives action. From social graphics to campaign assets — every pixel is intentional, every design is engineered to convert."
-          features={[
-            'Social media graphics & templates',
-            'Campaign visual systems',
-            'Print & digital collateral',
-            'Motion graphics & animated assets',
-            'Presentation design',
-          ]}
-          stats={[
-            { val: '3×', label: 'Higher Engagement Rate', color: 'gold' },
-            { val: '500+', label: 'Assets Delivered', color: 'violet' },
-            { val: '48h', label: 'Average Turnaround', color: 'cyan' },
-            { val: '100%', label: 'On-brand Consistency', color: 'gold' },
-          ]}
-          image="/images/design.png"
-          accent="text-gold"
-          align="left"
-        />
+        <DoubleMarquee items={['No BS','Real Results','Zero Outsourcing','Full Transparency','Guaranteed Growth','Data Driven','Always On','Built Different']} />
 
-        {/* ─── 4: LOGO & BRANDING ─────────────────── */}
-        <ServiceSection
-          id="branding"
-          sceneNo="04"
-          title="Logo & Branding"
-          tagline="Identity with intent."
-          description="We forge brand identities that don't just look good — they mean something. Logo systems, brand guidelines, and visual language built to scale and endure."
-          features={[
-            'Brand strategy & positioning',
-            'Logo design & variations',
-            'Complete brand guidelines',
-            'Color, typography & iconography',
-            'Brand application across touchpoints',
-          ]}
-          stats={[
-            { val: '150+', label: 'Brands Created', color: 'violet' },
-            { val: '97%', label: 'Client Satisfaction', color: 'gold' },
-            { val: '2wk', label: 'Brand Delivery', color: 'cyan' },
-            { val: '∞', label: 'Scalability Built In', color: 'violet' },
-          ]}
-          image="/images/branding.png"
-          accent="text-violet"
-          align="right"
-        />
-
-        {/* ─── 5: WEB DESIGN & DEV ────────────────── */}
-        <ServiceSection
-          id="webdev"
-          sceneNo="05"
-          title="Web Design & Development"
-          tagline="Sites that perform, not just appear."
-          description="We build digital experiences that are as fast as they are beautiful. Next.js, TypeScript, edge-deployed — engineered for Core Web Vitals perfection and conversion."
-          features={[
-            'Custom Next.js & React development',
-            'UX/UI design & prototyping',
-            'Performance & Core Web Vitals',
-            'SEO-ready architecture',
-            'CMS integration & E-commerce',
-          ]}
-          stats={[
-            { val: '98', label: 'PageSpeed Score', color: 'cyan' },
-            { val: '<1s', label: 'Load Time Target', color: 'violet' },
-            { val: '45%', label: 'Avg. Conversion Lift', color: 'gold' },
-            { val: '100%', label: 'Responsive & Accessible', color: 'cyan' },
-          ]}
-          image="/images/webdev.png"
-          accent="text-cyan"
-          align="left"
-        />
-
-        {/* ─── 6: SAAS ────────────────────────────── */}
-        <ServiceSection
-          id="saas"
-          sceneNo="06"
-          title="SaaS Applications"
-          tagline="Software that scales."
-          description="Full-stack SaaS products engineered for growth. From MVP to enterprise — we design, build, and launch software that your users love and your business depends on."
-          features={[
-            'Product design & UX architecture',
-            'Full-stack development (Next.js, Node, PostgreSQL)',
-            'Auth, billing & subscription systems',
-            'Real-time features & dashboards',
-            'Infrastructure, CI/CD & monitoring',
-          ]}
-          stats={[
-            { val: '30+', label: 'SaaS Products Launched', color: 'violet' },
-            { val: '2,543', label: 'Daily Active Users', color: 'cyan' },
-            { val: '99.9%', label: 'Uptime SLA', color: 'gold' },
-            { val: '$18M+', label: 'Revenue Generated', color: 'violet' },
-          ]}
-          image="/images/saas.png"
-          accent="text-violet"
-          align="right"
-        />
-
-        {/* Marquee strip */}
-        <DoubleMarquee items={['SEO', 'SMM', 'Design', 'Branding', 'Web Dev', 'SaaS', 'Strategy', 'Growth']} />
-
-        {/* ─── 7: ALL SERVICES SHOWCASE ───────────── */}
+        {/* ALL SERVICES SHOWCASE */}
         <ServicesShowcase />
 
-        {/* ─── 8: PRICING ─────────────────────────── */}
+        {/* PRICING */}
         <PricingSection />
 
-        {/* ─── 8: CTA ─────────────────────────────── */}
+        {/* CTA */}
         <CTASection />
       </main>
 

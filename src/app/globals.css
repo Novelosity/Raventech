@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -13,9 +13,12 @@
   --white: #F8F8FF;
   --gray-muted: #6B7280;
 
-  --font-space-grotesk: 'Space Grotesk', sans-serif;
-  --font-sora: 'Sora', sans-serif;
+  --font-orbitron: 'Orbitron', sans-serif;
+  --font-exo2: 'Exo 2', sans-serif;
   --font-inter: 'Inter', sans-serif;
+  /* legacy aliases kept for compat */
+  --font-space-grotesk: 'Exo 2', sans-serif;
+  --font-sora: 'Orbitron', sans-serif;
 }
 
 * {
@@ -200,4 +203,107 @@ html.lenis {
 /* Section padding */
 .section-pad {
   padding: clamp(5rem, 10vw, 10rem) clamp(1.5rem, 5vw, 5rem);
+}
+
+/* ── 3D Perspective utilities ───────────────────────────── */
+.perspective-scene {
+  perspective: 1200px;
+  perspective-origin: 50% 45%;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* 3D depth layers for parallax */
+.depth-far   { transform: translateZ(-40px) scale(1.04); }
+.depth-mid   { transform: translateZ(-20px) scale(1.02); }
+.depth-near  { transform: translateZ(20px); }
+.depth-front { transform: translateZ(40px); }
+
+/* Tilt card – JS sets --rx and --ry via inline style */
+.tilt-card {
+  transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.15s ease-out;
+  transform-style: preserve-3d;
+}
+
+/* Scroll-reveal: slides up with depth */
+.reveal-3d {
+  opacity: 0;
+  transform: perspective(800px) rotateX(12deg) translateY(30px);
+  transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-3d.in-view {
+  opacity: 1;
+  transform: perspective(800px) rotateX(0deg) translateY(0px);
+}
+
+/* ── Mobile responsive fixes ──────────────────────────── */
+@media (max-width: 640px) {
+  .section-pad {
+    padding: clamp(4rem, 8vw, 6rem) clamp(1rem, 4vw, 1.5rem);
+  }
+
+  h1, h2 {
+    word-break: break-word;
+  }
+}
+
+/* Prevent layout shift from fixed elements on mobile */
+@media (max-width: 768px) {
+  .canvas-container {
+    display: none; /* hide heavy 3D canvas on small screens to prevent lag */
+  }
+}
+
+/* ── Prefers-reduced-motion ───────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-3d {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Scroll progress indicator ─────────────────────────── */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #7C3AED, #22D3EE);
+  z-index: 9999;
+  transform-origin: left;
+}
+
+/* ── Floating section number ────────────────────────────── */
+.scene-number {
+  font-family: var(--font-orbitron);
+  font-size: clamp(4rem, 10vw, 8rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(34,211,238,0.08));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── Glow pulse animation ──────────────────────────────── */
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.08); }
+}
+
+/* ── Parallax track ─────────────────────────────────────── */
+.parallax-track {
+  will-change: transform;
 }

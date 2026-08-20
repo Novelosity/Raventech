@@ -18,8 +18,8 @@ const config: Config = {
         'cyan-dim': '#0891B2',
       },
       fontFamily: {
-        display: ['var(--font-space-grotesk)', 'Space Grotesk', 'sans-serif'],
-        headline: ['var(--font-sora)', 'Sora', 'sans-serif'],
+        display: ['var(--font-exo2)', 'Exo 2', 'sans-serif'],
+        headline: ['var(--font-orbitron)', 'Orbitron', 'sans-serif'],
         body: ['var(--font-inter)', 'Inter', 'sans-serif'],
       },
       fontSize: {

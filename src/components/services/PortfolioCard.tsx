@@ -73,13 +73,20 @@ export function PortfolioCard({ project, accent, onClick, index }: PortfolioCard
       data-cursor-scale="1.5"
       data-cursor-label="VIEW"
     >
-      {/* Thumbnail gradient bg */}
-      <div
-        className={`absolute inset-0 bg-gradient-to-br ${project.thumbnailGradient}`}
-      />
-
-      {/* Geometric SVG pattern */}
-      <GeometricPattern />
+      {/* Thumbnail — real image or gradient fallback */}
+      {project.image ? (
+        <img
+          src={project.image}
+          alt={project.title}
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <>
+          <div className={`absolute inset-0 bg-gradient-to-br ${project.thumbnailGradient}`} />
+          <GeometricPattern />
+        </>
+      )}
 
       {/* "Sample / Concept" badge */}
       <div className="absolute top-3 left-3 z-10">

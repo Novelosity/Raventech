@@ -54,6 +54,26 @@ export function CTASection() {
         style={{ scale }}
         className="relative z-10 max-w-4xl mx-auto space-y-8"
       >
+        {/* Social proof bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="flex items-center justify-center gap-2 mb-2"
+        >
+          <div className="flex items-center gap-0.5">
+            {[1,2,3,4,5].map(i => (
+              <svg key={i} className="w-3.5 h-3.5 text-gold" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            ))}
+          </div>
+          <span className="text-xs font-display text-white/40 tracking-wider">
+            4.9 / 5 &nbsp;·&nbsp; 87 verified reviews &nbsp;·&nbsp; 200+ brands scaled
+          </span>
+        </motion.div>
+
         {/* Pre-label */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -72,20 +92,20 @@ export function CTASection() {
         {/* Main CTA headline */}
         <div>
           <h2
-            className="font-headline font-extrabold leading-tight"
+            className="font-headline font-extrabold leading-[0.9]"
             style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
           >
             <RevealText
-              text="Let's build"
+              text="Stop blending in."
               mode="words"
               className="text-white block"
               delay={0.1}
             />
             <RevealText
-              text="your empire."
+              text="Dominate."
               mode="words"
               className="text-gradient-violet-cyan block"
-              delay={0.4}
+              delay={0.45}
             />
           </h2>
         </div>
@@ -99,8 +119,9 @@ export function CTASection() {
           className="text-white/50 font-body max-w-lg mx-auto leading-relaxed"
           style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)' }}
         >
-          We partner with ambitious brands to engineer digital marketing that
-          doesn&apos;t just grow — it compounds. Let&apos;s talk.
+          200+ brands have already made the shift. We partner with ambitious
+          companies to build digital marketing systems that don&apos;t just
+          grow — they compound. Your next unfair advantage starts here.
         </motion.p>
 
         {/* Contact buttons */}
@@ -131,25 +152,38 @@ export function CTASection() {
           </MagneticButton>
         </motion.div>
 
-        {/* Trust badges */}
+        {/* Trust badges — SVG icons only, no emoji */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.1 }}
           viewport={{ once: true }}
-          className="flex flex-wrap items-center justify-center gap-6 pt-4"
+          className="flex flex-wrap items-center justify-center gap-5 pt-4"
         >
           {[
-            '🔒 NDA Protected',
-            '⚡ 48h Response',
-            '📊 Data-driven',
-            '🏆 Award-winning',
+            {
+              label: 'NDA Protected',
+              icon: <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>,
+            },
+            {
+              label: '48h Response',
+              icon: <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>,
+            },
+            {
+              label: 'Data-Driven',
+              icon: <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>,
+            },
+            {
+              label: 'Results Guaranteed',
+              icon: <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 010 3.182M9.095 3.368l-.004.001A3.745 3.745 0 006.75 6.25c-.621 0-1.125.504-1.125 1.125v.75c0 .621-.504 1.125-1.125 1.125H3.375C2.754 9.25 2.25 9.754 2.25 10.375V12c0 .621.504 1.125 1.125 1.125h.75c.621 0 1.125.504 1.125 1.125v.75c0 .621-.504 1.125-1.125 1.125H3.375A1.125 1.125 0 012.25 17.25v1.125c0 .621.504 1.125 1.125 1.125h1.5c.621 0 1.125-.504 1.125-1.125v-.75c0-.621.504-1.125 1.125-1.125h.75" /></svg>,
+            },
           ].map((badge) => (
             <span
-              key={badge}
-              className="text-xs font-display font-medium text-white/30 tracking-wider"
+              key={badge.label}
+              className="flex items-center gap-1.5 text-[11px] font-display font-medium text-white/35 tracking-wider"
             >
-              {badge}
+              <span className="text-white/25">{badge.icon}</span>
+              {badge.label}
             </span>
           ))}
         </motion.div>
